@@ -135,6 +135,14 @@ npm install
 npm start
 ```
 
+You can now also run the server using Server-Sent Events (SSE) transport on port 8888:
+
+```bash
+npm start -- --sse
+```
+
+Note that the double dash (`--`) is required to pass arguments to the underlying node process when using npm start.
+
 ### Configuration with Environment Variables
 
 The server can be configured using environment variables:

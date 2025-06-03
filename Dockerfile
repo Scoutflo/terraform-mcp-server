@@ -21,4 +21,6 @@ ENV NODE_ENV=production
 
 RUN npm ci --ignore-scripts --omit-dev
 
-ENTRYPOINT ["node", "/app/dist/index.js"]
+EXPOSE 8888
+
+ENTRYPOINT ["node", "/app/dist/index.js", "--sse"]

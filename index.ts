@@ -8,6 +8,9 @@ if (!globalThis.fetch) {
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { InitializeRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import express from "express";
 
 import { z } from "zod";
 
@@ -672,26 +675,79 @@ function registerResources(server: McpServer) {
 // --- Start the server ---
 async function main() {
   console.error(`🚀 Starting ${SERVER_NAME} MCP server v${VERSION} using McpServer...`);
-  const transport = new StdioServerTransport();
 
-  process.on("unhandledRejection", (reason) => {
-    console.error("💥 Unhandled Promise Rejection:", reason);
-    // Consider more robust error handling or process exit depending on severity
-  });
+  // Register prompts and resources before setting up any transport
+  registerPrompts(server);
+  registerResources(server);
 
-  try {
-    // Register prompts before connecting
-    registerPrompts(server);
+  // Determine transport based on command line arguments
+  const useSse = process.argv.includes("--sse");
 
-    // Register resources before connecting
-    registerResources(server);
+  if (useSse) {
+    logger.info("Using SSE transport on port 8888");
+    console.error("✅ McpServer configured for SSE on port 8888");
+    
+    const app = express();
+    app.use(express.json());
 
-    // McpServer handles connection internally
-    await server.connect(transport);
-    console.error("✅ McpServer connected and ready for requests via stdio");
-  } catch (error) {
-    console.error("❌ Fatal error during McpServer connection:", error);
-    process.exit(1);
+    // Map to store transports by session ID
+    const transports: { [sessionId: string]: SSEServerTransport } = {};
+
+    // Handle GET requests for SSE connection
+    app.get('/sse', async (req, res) => {
+      logger.debug("New SSE connection request");
+      
+      // Create SSE transport
+      const transport = new SSEServerTransport('/messages', res);
+      transports[transport.sessionId] = transport;
+      
+      // Clean up when connection closes
+      res.on("close", () => {
+        logger.debug(`SSE connection closed for session ${transport.sessionId}`);
+        delete transports[transport.sessionId];
+      });
+      
+      // Connect to the MCP server
+      await server.connect(transport);
+      logger.info(`SSE transport connected with session ID: ${transport.sessionId}`);
+    });
+
+    // Handle POST requests for message passing
+    app.post('/messages', async (req, res) => {
+      const sessionId = req.query.sessionId as string;
+      
+      if (!sessionId || !transports[sessionId]) {
+        res.status(400).json({ error: 'Invalid or missing session ID' });
+        return;
+      }
+      
+      const transport = transports[sessionId];
+      await transport.handlePostMessage(req, res, req.body);
+    });
+
+    app.listen(8888, () => {
+      logger.info("SSE server listening on port 8888");
+      console.error("✅ SSE server listening on port 8888");
+      console.error("Connect via: http://localhost:8888/sse");
+    });
+  } else {
+    logger.info("Using STDIO transport");
+    const transport = new StdioServerTransport();
+    console.error("✅ McpServer configured for STDIO");
+    
+    process.on("unhandledRejection", (reason) => {
+      console.error("💥 Unhandled Promise Rejection:", reason);
+      // Consider more robust error handling or process exit depending on severity
+    });
+
+    try {
+      // McpServer handles connection internally
+      await server.connect(transport);
+      console.error("✅ McpServer connected and ready for requests via stdio");
+    } catch (error) {
+      console.error("❌ Fatal error during McpServer connection:", error);
+      process.exit(1);
+    }
   }
 }
 
