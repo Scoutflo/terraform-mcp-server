@@ -14,7 +14,7 @@ runTest("Terraform Cloud Resources", () => {
   describe("Organizations", () => {
     it("should list organizations", async () => {
       expect.hasAssertions();
-      
+
       // Mock the organizations response
       mockFetchResponse({
         ok: true,
@@ -70,7 +70,7 @@ runTest("Terraform Cloud Resources", () => {
     // The test below still uses handleResourcesList as an example of the old approach
     it("should list organizations using handleResourcesList", async () => {
       expect.hasAssertions();
-      
+
       // Mock the organizations response
       mockFetchResponse({
         ok: true,
@@ -107,7 +107,7 @@ runTest("Terraform Cloud Resources", () => {
   describe("Workspaces", () => {
     it("should list workspaces for an organization", async () => {
       expect.hasAssertions();
-      
+
       // Skip this test if TFC_TOKEN is not set
       if (!TFC_TOKEN) {
         console.warn("Skipping test: TFC_TOKEN not set");
@@ -151,7 +151,7 @@ runTest("Terraform Cloud Resources", () => {
 
     it("should read workspace details", async () => {
       expect.hasAssertions();
-      
+
       // Skip this test if TFC_TOKEN is not set
       if (!TFC_TOKEN) {
         console.warn("Skipping test: TFC_TOKEN not set");
@@ -200,7 +200,7 @@ runTest("Terraform Cloud Resources", () => {
   describe("Workspace Resources", () => {
     it("should list resources in a workspace", async () => {
       expect.hasAssertions();
-      
+
       // Skip this test if TFC_TOKEN is not set
       if (!TFC_TOKEN) {
         console.warn("Skipping test: TFC_TOKEN not set");
@@ -265,7 +265,7 @@ runTest("Terraform Cloud Resources", () => {
 
     it("should handle workspace not found", async () => {
       expect.hasAssertions();
-      
+
       // Skip this test if TFC_TOKEN is not set
       if (!TFC_TOKEN) {
         console.warn("Skipping test: TFC_TOKEN not set");
