@@ -75,7 +75,7 @@ describe("MCP Tools Integration Tests", () => {
     // Enabled: This test doesn't make complex API calls
     test("moduleSearch should return VPC modules", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("moduleSearch", {
         query: "vpc"
       });
@@ -87,7 +87,7 @@ describe("MCP Tools Integration Tests", () => {
     // Enable more tests
     test("providerDetails should return AWS provider information", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("providerDetails", {
         provider: "aws",
         namespace: "hashicorp"
@@ -99,7 +99,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("resourceUsage should return S3 bucket examples", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("resourceUsage", {
         provider: "aws",
         resource: "aws_s3_bucket"
@@ -111,7 +111,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("listDataSources should return AWS data sources", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("listDataSources", {
         provider: "aws",
         namespace: "hashicorp"
@@ -123,7 +123,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("resourceArgumentDetails should return AWS instance args", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("resourceArgumentDetails", {
         provider: "aws",
         namespace: "hashicorp",
@@ -137,7 +137,7 @@ describe("MCP Tools Integration Tests", () => {
     // Keep these as skipped since they might be more complex or rate-limited
     test("moduleDetails should return VPC module details", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("moduleDetails", {
         namespace: "terraform-aws-modules",
         module: "vpc",
@@ -150,7 +150,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("functionDetails should return cidrsubnet function details", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("functionDetails", {
         provider: "aws",
         function: "cidrsubnet"
@@ -162,7 +162,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("providerGuides should return AWS guides", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("providerGuides", {
         provider: "aws"
       });
@@ -173,7 +173,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("policySearch should return security policies", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("policySearch", {
         query: "security"
       });
@@ -184,7 +184,7 @@ describe("MCP Tools Integration Tests", () => {
 
     test("policyDetails should return AWS S3 policy details", async () => {
       expect.assertions(1);
-      
+
       const response = await runToolCall("policyDetails", {
         namespace: "hashicorp",
         name: "CIS-Policy-Set-for-AWS-S3-Terraform"
@@ -202,7 +202,7 @@ describe("MCP Tools Integration Tests", () => {
 
     conditionalTest("should list organizations", async () => {
       expect.assertions(hasTfcToken ? 1 : 0);
-      
+
       const response = await runToolCall("mcp_terraform_registry_listOrganizations", {
         random_string: "test"
       });
@@ -220,7 +220,7 @@ describe("MCP Tools Integration Tests", () => {
 
     conditionalTest("should query workspaces", async () => {
       expect.assertions(hasTfcToken ? 1 : 0);
-      
+
       const organization = getOrganization();
       const response = await runToolCall("mcp_terraform_registry_explorerQuery", {
         organization,
